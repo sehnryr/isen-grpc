@@ -29,11 +29,12 @@ def retrieve_value(stub, key):
 
 # Main Click command to interact with the client
 @click.command()
+@click.option('--port', default=50051, type=int, help="Port for the server to listen on.")
 @click.option('--store', nargs=2, metavar=('key', 'value'), help="Store a key-value pair")
 @click.option('--retrieve', metavar='key', help="Retrieve a value by key")
-def main(store, retrieve):
+def main(port, store, retrieve):
     # Connect to the gRPC server
-    channel = grpc.insecure_channel('localhost:50051')
+    channel = grpc.insecure_channel(f'[::]:{port}')
     stub = key_value_store_pb2_grpc.KeyValueStoreStub(channel)
 
     if store:

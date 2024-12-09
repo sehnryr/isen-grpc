@@ -1,4 +1,5 @@
 import grpc
+import click
 import time
 import key_value_store_pb2
 import key_value_store_pb2_grpc
@@ -62,12 +63,16 @@ class KeyValueStoreServicer(key_value_store_pb2_grpc.KeyValueStoreServicer):
                 error=key_value_store_pb2.Error(message="Key not found")
             )
 
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+# CLI command to start the server
+@click.command()
+@click.option('--port', default=50051, type=int, help="Port for the server to listen on.")
+@click.option('--workers', default=10, type=int, help="Number of worker threads to handle requests.")
+def serve(port, workers):
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=workers))
     key_value_store_pb2_grpc.add_KeyValueStoreServicer_to_server(KeyValueStoreServicer(), server)
 
-    server.add_insecure_port('[::]:50051')
-    print("Server starting on port 50051...")
+    server.add_insecure_port(f'[::]:{port}')
+    print(f"Server starting on port {port} with {workers} workers...")
     server.start()
 
     # Waiting for termination signals (Ctrl+C)
