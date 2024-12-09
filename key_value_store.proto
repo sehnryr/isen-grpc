@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+// Define the service for a key-value store
+service KeyValueStore {
+    // Client sends a Store request with a key-value pair
+    rpc Store (StoreRequest) returns (StoreResponse);
+
+    // Client sends a Retrieve request with a key
+    rpc Retrieve (RetrieveRequest) returns (RetrieveResponse);
+}
+
+// Request format for storing a key-value pair
+message StoreRequest {
+    string key = 1;    // The key to store
+    string value = 2;  // The value associated with the key
+}
+
+// Response format after storing a key-value pair
+message StoreResponse {
+    oneof response {
+        Ok ok = 1;                // Successful store
+        Error error = 2;          // Error in store
+    }
+}
+
+// Request format for retrieving a value by key
+message RetrieveRequest {
+    string key = 1;    // The key to retrieve
+}
+
+// Response format for retrieving a value by key
+message RetrieveResponse {
+    oneof response {
+        Value value = 1;      // The key-value pair retrieved
+        Error error = 2;      // Error in retrieval
+    }
+}
+
+// A response message indicating success
+message Ok {
+    string key = 1;    // The key that was successfully stored
+}
+
+// A response message containing the retrieved value
+message Value {
+    string key = 1;    // The key that was retrieved
+    string value = 2;  // The value associated with the key
+}
+
+// A response message indicating an error
+message Error {
+    string message = 1;  // Error message
+}
